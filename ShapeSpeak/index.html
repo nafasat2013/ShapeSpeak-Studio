@@ -1,0 +1,327 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ShapeSpeak Studio</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, Helvetica, sans-serif;
+        background: linear-gradient(135deg, #101820, #2c5364);
+        color: white;
+        padding: 30px;
+      }
+
+      .container {
+        width: 650px;
+        max-width: 100%;
+        text-align: center;
+
+        padding: 35px;
+
+        border-radius: 20px;
+
+        background: rgba(20, 30, 45, 0.95);
+
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .container h1 {
+        margin-top: 0;
+
+        font-size: 38px;
+
+        color: #ffd166;
+      }
+
+      .subtitle {
+        color: #d9e4ea;
+
+        margin-bottom: 25px;
+      }
+
+      .commands {
+        margin-bottom: 20px;
+      }
+
+      .commands p {
+        font-size: 18px;
+
+        font-weight: bold;
+      }
+
+      .command {
+        margin: 10px auto;
+
+        padding: 12px;
+
+        width: 80%;
+
+        border-radius: 8px;
+
+        font-weight: bold;
+
+        letter-spacing: 1px;
+      }
+
+      .triangle {
+        background-color: #e76f51;
+      }
+
+      .diamond {
+        background-color: #457b9d;
+      }
+
+      .star {
+        background-color: #e9c46a;
+
+        color: #222;
+      }
+
+      #shape-name {
+        width: 80%;
+
+        margin: 25px auto;
+
+        padding: 15px;
+
+        border-radius: 10px;
+
+        background-color: #0d141c;
+
+        border: 2px solid #ffd166;
+
+        font-size: 20px;
+
+        font-weight: bold;
+      }
+
+      .start {
+        padding: 13px 35px;
+
+        border: none;
+
+        border-radius: 10px;
+
+        font-size: 17px;
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+        background-color: #ffd166;
+
+        color: #222;
+
+        transition:
+          transform 0.2s,
+          opacity 0.2s;
+      }
+
+      .start:hover {
+        transform: translateY(-2px);
+
+        opacity: 0.9;
+      }
+
+      #drawingBoard {
+        display: block;
+
+        width: 100%;
+
+        height: auto;
+
+        margin-top: 30px;
+
+        background-color: white;
+
+        border-radius: 12px;
+
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>ShapeSpeak Studio</h1>
+
+      <p class="subtitle">Use your voice to choose a shape!</p>
+
+      <div class="commands">
+        <p>Say one of these commands:</p>
+
+        <div class="command triangle">DRAW A TRIANGLE</div>
+        <div class="command diamond">DRAW A DIAMOND</div>
+        <div class="command star">DRAW A STAR</div>
+      </div>
+
+      <div id="shape-name">Waiting for a command...</div>
+
+      <button class="start" onclick="start()">Start Listening</button>
+
+      <canvas id="drawingBoard" width="500" height="300"></canvas>
+    </div>
+
+    <script>
+      function start() {
+        const canvas = document.getElementById("drawingBoard");
+        const ctx = canvas.getContext("2d");
+
+        const status = document.getElementById("shape-name");
+
+        // Clear the previous drawing
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Check whether speech recognition is supported
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+          status.textContent =
+            "Speech recognition is not supported in this browser.";
+
+          return;
+        }
+
+        const recognition = new SpeechRecognition();
+
+        recognition.lang = "en-US";
+
+        recognition.onstart = function () {
+          status.textContent = "Listening...";
+        };
+
+        recognition.onerror = function (event) {
+          status.textContent = "Error: " + event.error;
+        };
+
+        recognition.onresult = function (event) {
+          const command = event.results[0][0].transcript.toLowerCase();
+
+          status.textContent = "You said: " + command;
+
+          if (command.includes("triangle")) {
+            drawTriangle(ctx);
+          } else if (command.includes("diamond")) {
+            drawDiamond(ctx);
+          } else if (command.includes("star")) {
+            drawStar(ctx);
+          } else {
+            status.textContent = "Command is invalid!";
+          }
+        };
+
+        recognition.start();
+      }
+
+      /* ---------------- TRIANGLE ---------------- */
+
+      function drawTriangle(ctx) {
+        ctx.beginPath();
+
+        ctx.moveTo(250, 50);
+
+        ctx.lineTo(120, 240);
+
+        ctx.lineTo(380, 240);
+
+        ctx.closePath();
+
+        ctx.fillStyle = "#e76f51";
+
+        ctx.fill();
+
+        ctx.lineWidth = 5;
+
+        ctx.strokeStyle = "#b8422d";
+
+        ctx.stroke();
+      }
+
+      /* ---------------- DIAMOND ---------------- */
+
+      function drawDiamond(ctx) {
+        ctx.beginPath();
+
+        ctx.moveTo(250, 40);
+
+        ctx.lineTo(380, 150);
+
+        ctx.lineTo(250, 260);
+
+        ctx.lineTo(120, 150);
+
+        ctx.closePath();
+
+        ctx.fillStyle = "#457b9d";
+
+        ctx.fill();
+
+        ctx.lineWidth = 5;
+
+        ctx.strokeStyle = "#28546e";
+
+        ctx.stroke();
+      }
+
+      /* ---------------- STAR ---------------- */
+
+      function drawStar(ctx) {
+        const centerX = 250;
+
+        const centerY = 150;
+
+        const outerRadius = 110;
+
+        const innerRadius = 50;
+
+        const points = 5;
+
+        ctx.beginPath();
+
+        for (let i = 0; i < points * 2; i++) {
+          const radius = i % 2 === 0 ? outerRadius : innerRadius;
+
+          const angle = (Math.PI / points) * i - Math.PI / 2;
+
+          const x = centerX + Math.cos(angle) * radius;
+
+          const y = centerY + Math.sin(angle) * radius;
+
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+
+        ctx.closePath();
+
+        ctx.fillStyle = "#e9c46a";
+
+        ctx.fill();
+
+        ctx.lineWidth = 5;
+
+        ctx.strokeStyle = "#b68c1d";
+
+        ctx.stroke();
+      }
+    </script>
+  </body>
+</html>
